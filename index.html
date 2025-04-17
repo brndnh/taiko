@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rhythm sense practice!</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <h1>Taiko Rhythm Game</h1>
+    
+    <input type="file" id="audioUpload" accept="audio/mp3">
+    <input type="number" id="bpmInput" placeholder="120">
+    <button id="startButton">Start</button>
+
+    <div id="gameContainer">
+        <div id="track"></div>
+    </div>
+
+    <audio id="audioPlayer" controls></audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
