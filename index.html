@@ -1,24 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>rhythm sense practice!</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
-    <h1>Taiko Rhythm Game</h1>
-    
-    <input type="file" id="audioUpload" accept="audio/mp3">
-    <input type="number" id="bpmInput" placeholder="120">
-    <button id="startButton">Start</button>
 
-    <div id="gameContainer">
-        <div id="track"></div>
+<body>
+    <div id="score">Score: 0</div>
+    <!-- <div id="hitScores" >
+        Perfect: <span id="perfectCount">0</span> |
+        Good:    <span id="goodCount">0</span> |
+        Misses:  <span id="missCount">0</span>
+    </div> -->
     </div>
 
-    <audio id="audioPlayer" controls></audio>
+    <!-- gameplay screen -->
+    <div id="gameplayDesktop" class="view">
+        <div id="gameContainer">
+            <div id="track"></div>
+            <div id="hitzone"></div>
+        </div>
+
+        <!-- key counter -->
+        <div id="keyCounters" style="display:flex; gap:1em; margin:1em 0;">
+            <div class="counter blue">D: <span id="countD">0</span></div>
+            <div class="counter red">F: <span id="countF">0</span></div>
+            <div class="counter red">J: <span id="countJ">0</span></div>
+            <div class="counter blue">K: <span id="countK">0</span></div>
+        </div>
+
+
+        <!-- game options below the game container -->
+        <div id="scoreBoard"> <audio id="audioPlayer" controls></audio>
+            <div id="songInfo">Now Playing: <span id="songName">No Song</span></div>
+            <input type="file" id="audioUpload" accept="audio/mp3">
+            <div id="bpmInfo">BPM: <span id="bpmDisplay">120</span></div>
+        </div>
+
+        <!-- game controls on the left side -->
+        <div id="controlsContainer">
+            <input type="number" id="bpmInput" placeholder="120">
+
+            <label style="display:block; margin:0.5em 0;">
+                <input type="checkbox" id="colorToggle" checked>
+                Alternate red/blue circles
+            </label>
+
+            <label style="display:block; margin:0.5em 0;">
+                <input type="checkbox" id="tripletToggle">
+                Enable more patterns
+            </label>
+
+
+            <label style="display:block; margin:0.5em 0;">
+                Circle Speed:
+                <input type="range" id="speedInput" min="5" max="15" value="5">
+                <span id="speedDisplay">5</span>
+                px/s
+            </label>
+
+            <label style="display:block; margin:0.5em 0;">
+                <input type="checkbox" id="soundToggle" checked>
+                Hit Sounds
+            </label>
+
+            <button id="startButton">Start</button>
+            <button id="stopButton">Stop</button>
+        </div>
+    </div>
+
+    <!-- hit sounds -->
+    <audio id="hitRedAudio" src="assets/drum-hitred.wav" preload="auto"></audio>
+    <audio id="hitBlueAudio" src="assets/drum-hitblue.wav" preload="auto"></audio>
 
     <script src="script.js"></script>
 </body>
+
 </html>

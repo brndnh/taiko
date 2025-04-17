@@ -1,45 +1,135 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+
 body {
-    text-align: center;
-    font-family: Arial, sans-serif;
+    text-align: left;
+    font-family: "Noto Sans", sans-serif;
     background-color: #222;
     color: white;
+}
+
+#score {
+    font-size: 36px;
+}
+
+.view {
+    display: none;
+}
+
+#startDesktop {
+    display: block;
+}
+
+#gameplayDesktop {
+    display: block;
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.inputSection {
+    margin-bottom: 20px;
+}
+
+#startButton,
+#stopButton {
+  display: inline-block;      
+  width: 140px;               
+  height: 48px;              
+  font-size: 1.1rem;         
+  padding: 0;                 
+  line-height: 48px;        
+  text-align: center;        
+  border-radius: 6px;       
+  cursor: pointer;
+}
+
+.welcomeText {
+    margin-top: 20px;
+}
+
+#gameContainer {
+    position: relative;
+    width: 99.4%;
+    height: 300px;
+    overflow: hidden;
+    border: 5px solid white;
+}
+
+#scoreBoard {
+    position: relative;
+    font-size: 24px;
+    color: white;
+}
+
+
+#songInfo,
+#bpmInfo {
+    margin-top: 5px;
 }
 
 #track {
     position: absolute;
     width: 100%;
-    height: 200px; /* Increase track height */
-    bottom: 100px; /* Adjust position */
+    height: 220px;
+    bottom: 40px;
     background-color: darkgray;
     z-index: 0;
 }
 
-#gameContainer {
-    position: relative;
-    width: 100%;
-    height: 400px;
-    overflow: hidden;
-    border: 5px solid white;
-    margin-top: 20px;
-}
-
 .circle {
     position: absolute;
-    width: 200px; /* Adjusted to match hitzone size */
-    height: 200px; /* Adjusted to match hitzone size */
+    width: 200px;
+    height: 200px;
     border-radius: 50%;
-    background-color: red;
-    bottom: 100px;
+    background-color: #f82f23;
+    bottom: 50px;
+    transition: background-color 0.1s ease;
+    overflow: hidden;
+    /* just in case */
 }
 
+.circle::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200px;
+    height: 200px;
+    /* force the overlay box size */
+    background: url("/assets/taikohitcircleoverlay.png") center/200px 200px no-repeat;
+    pointer-events: none;
+}
+
+.circle.hit {
+    background-color: white !important;
+}
+
+.circle,
+#hitzone {
+    bottom: 50px;
+}
 
 #hitzone {
     position: absolute;
-    width: 200px; /* Adjusted size */
-    height: 200px; /* Adjusted size */
-    border-radius: 50%; /* Keep it circular */
-    background-color: rgba(128, 128, 128, 0.3); /* Transparent gray */
-    left: 20%; /* Position at 20% inward */
-    bottom: 100px; /* Align with the circles */
-    pointer-events: none; /* So it doesn't block clicks */
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background-color: rgba(128, 128, 128, 0.3);
+    left: 20%;
+    pointer-events: none;
+}
+
+/* key overlay */
+.counter.blue {
+    color: lightblue;
+}
+.counter.red {
+    color: salmon;
+}
+.counter span {
+    transition: color 0.1s ease;
+}
+.counter span.flash {
+    color: white;
+    /* or whatever “flash” color you like */
 }
