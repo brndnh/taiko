@@ -28,6 +28,28 @@ volumeSlider.addEventListener('input', () => {
     volumeDisplay.textContent = `${Math.round(v * 100)}%`;
 });
 
+const offsetSlider = document.getElementById('offsetSlider');
+const offsetDisplay = document.getElementById('offsetDisplay');
+
+let circleOffset = parseInt(offsetSlider.value, 10);
+let prevCircleOffset = circleOffset;
+
+offsetSlider.addEventListener('input', () => {
+    const newOffset = parseInt(offsetSlider.value, 10);
+    const delta = newOffset - prevCircleOffset;
+
+    // shift every currently active circle by that delta
+    activeCircles.forEach(circle => {
+        // parse out the current `left` (in px), add delta, and re‑apply
+        const curLeft = parseFloat(circle.style.left);
+        circle.style.left = (curLeft + delta) + 'px';
+    });
+
+    // update our trackers and UI
+    circleOffset = newOffset;
+    prevCircleOffset = newOffset;
+    offsetDisplay.textContent = newOffset;
+});
 
 const difficultyToggle = document.getElementById('tripletToggle');
 const hitRedAudio = document.getElementById('hitRedAudio');
@@ -35,20 +57,20 @@ const hitBlueAudio = document.getElementById('hitBlueAudio');
 const soundToggle = document.getElementById('soundToggle');
 
 // set hit‑sound volumes
-const sfxSlider  = document.getElementById('sfxSlider');
+const sfxSlider = document.getElementById('sfxSlider');
 const sfxDisplay = document.getElementById('sfxDisplay');
 
 // initialize both hit sounds
-hitRedAudio.volume  = parseFloat(sfxSlider.value);
+hitRedAudio.volume = parseFloat(sfxSlider.value);
 hitBlueAudio.volume = parseFloat(sfxSlider.value);
 sfxDisplay.textContent = `${Math.round(sfxSlider.value * 100)}%`;
 
 // update on slider change
 sfxSlider.addEventListener('input', () => {
-  const v = parseFloat(sfxSlider.value);
-  hitRedAudio.volume  = v;
-  hitBlueAudio.volume = v;
-  sfxDisplay.textContent = `${Math.round(v * 100)}%`;
+    const v = parseFloat(sfxSlider.value);
+    hitRedAudio.volume = v;
+    hitBlueAudio.volume = v;
+    sfxDisplay.textContent = `${Math.round(v * 100)}%`;
 });
 
 
@@ -90,9 +112,10 @@ let songName = '';
 const patterns = () => {
     const interval = 60000 / bpm;
     return [
-        { odds: 0.60, delays: [0] },
+        { odds: 0.65, delays: [0] },
         { odds: 0.35, delays: [0, interval / 2] },
-        { odds: 0.05, delays: [0, interval / 3, 2 * interval / 3] }
+        { odds: 0.00, delays: [0, interval / 3, 2 * interval / 3] }
+        // disabled triplets for now^^
     ];
 };
 function choosePattern() {
@@ -194,7 +217,6 @@ function spawnLoop() {
     }
 }
 
-
 function stopGame() {
     resetKeyCounters();
     clearInterval(beatInterval);
@@ -214,7 +236,7 @@ function spawnCircle() {
 
     // color logic
     const key = colorToggle.checked
-        ? (Math.random() < 0.6 ? 'red' : 'blue')
+        ? (Math.random() < 0.65 ? 'red' : 'blue')
         : 'red';
     circle.dataset.color = key;
     circle.style.backgroundColor = (key === 'red' ? '#f82f23' : '#56b4b2');
@@ -222,7 +244,7 @@ function spawnCircle() {
     gameContainer.appendChild(circle);
     activeCircles.push(circle);
 
-    let x = window.innerWidth;
+    let x = window.innerWidth + circleOffset;
     circle.style.left = x + 'px';
 
     function animate() {

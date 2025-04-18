@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>rhythm sense practice!</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="/assets/whiteflower.ico" rel="icon">
 </head>
 
 <body>
@@ -35,15 +36,21 @@
 
         <!-- game options below the game container -->
         <div id="scoreBoard"> <audio id="audioPlayer" controls></audio>
+            <label>
+                Circle Offset:
+                <input type="range" id="offsetSlider" min="-100" max="100" step="1" value="0">
+                <span id="offsetDisplay">0</span>px
+            </label>
+
             <div id="songInfo">Now Playing: <span id="songName">No Song</span></div>
             <input type="file" id="audioUpload" accept="audio/mp3">
-            <label style="display:block; margin:0.5em 0;">
+            <label>
                 Music:
                 <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.5">
                 <span id="volumeDisplay">50%</span>
             </label>
 
-            <label style="display:block; margin:0.5em 0;">
+            <label>
                 Hitsounds:
                 <input type="range" id="sfxSlider" min="0" max="1" step="0.01" value="0.7">
                 <span id="sfxDisplay">70%</span>
@@ -57,25 +64,22 @@
         <div id="controlsContainer">
             <input type="number" id="bpmInput" placeholder="120">
 
-            <label style="display:block; margin:0.5em 0;">
+            <label>
                 <input type="checkbox" id="colorToggle" checked>
                 Alternate red/blue circles
-            </label>
-
-            <label style="display:block; margin:0.5em 0;">
                 <input type="checkbox" id="tripletToggle">
                 Enable more patterns
             </label>
 
 
-            <label style="display:block; margin:0.5em 0;">
+            <label>
                 Circle Speed:
-                <input type="range" id="speedInput" min="5" max="15" value="5">
-                <span id="speedDisplay">5</span>
+                <input type="range" id="speedInput" min="5" max="35" value="20">
+                <span id="speedDisplay">20</span>
                 px/s
             </label>
 
-            <label style="display:block; margin:0.5em 0;">
+            <label>
                 <input type="checkbox" id="soundToggle" checked>
                 Hit Sounds
             </label>

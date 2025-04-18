@@ -7,6 +7,12 @@ body {
     color: white;
 }
 
+label {
+    display:block;
+    margin: 0.5em 0;
+
+}
+
 #score {
     font-size: 36px;
 }
@@ -32,20 +38,17 @@ body {
 
 #startButton,
 #stopButton {
-  display: inline-block;      
-  width: 140px;               
-  height: 48px;              
-  font-size: 1.1rem;         
-  padding: 0;                 
-  line-height: 48px;        
-  text-align: center;        
-  border-radius: 6px;       
-  cursor: pointer;
+    display: inline-block;
+    width: 140px;
+    height: 48px;
+    font-size: 1.1rem;
+    padding: 0;
+    line-height: 48px;
+    text-align: center;
+    border-radius: 6px;
+    cursor: pointer;
 }
 
-.welcomeText {
-    margin-top: 20px;
-}
 
 #gameContainer {
     position: relative;
@@ -53,6 +56,10 @@ body {
     height: 300px;
     overflow: hidden;
     border: 5px solid white;
+}
+
+#keyCounters {
+    font-size: larger;
 }
 
 #scoreBoard {
@@ -123,13 +130,40 @@ body {
 .counter.blue {
     color: lightblue;
 }
+
 .counter.red {
     color: salmon;
 }
+
 .counter span {
     transition: color 0.1s ease;
 }
+
 .counter span.flash {
     color: white;
     /* or whatever “flash” color you like */
+}
+
+/* remove the blue focus ring and sticky highlight */
+input[type="checkbox"] {
+    outline: none;
+    box-shadow: none;
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #fff;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+input[type="checkbox"]:checked {
+    background-color: white;
+}
+
+/* make sure no outline shows on focus or active */
+input[type="checkbox"]:focus,
+input[type="checkbox"]:active {
+    outline: none;
+    box-shadow: none;
 }
