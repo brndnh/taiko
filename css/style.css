@@ -1,169 +1,852 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+:root {
+    --bg: #0e0c12;
+    --surface-2: rgba(255, 255, 255, 0.07);
+    --border: rgba(255, 255, 255, 0.12);
+    --border-strong: rgba(255, 255, 255, 0.22);
+    --field-bg: rgba(0, 0, 0, 0.28);
+    --text: #f4f1f8;
+    --muted: #a49eb0;
+    --red: #f2483a;
+    --red-dark: #b9281d;
+    --blue: #4fc1c4;
+    --blue-dark: #2c8d90;
+    --great: #ffcc4d;
+    --good: #f4f1f8;
+    --miss: #7d7788;
 
+    /* playfield geometry (script.js reads the hit zone's size and position) */
+    --lane-height: clamp(150px, 34vh, 340px);
+    --note-size: calc(var(--lane-height) * 0.66);
+    --hit-x: clamp(110px, 12vw, 260px);
+    --sidebar-width: 360px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+/* dark native controls (audio player, scrollbars, number spinners) */
+:root {
+    color-scheme: dark;
+}
+
+html,
 body {
-    text-align: left;
-    font-family: "Noto Sans", sans-serif;
-    background-color: #222;
-    color: white;
-}
-
-label {
-    display:block;
-    margin: 0.5em 0;
-
-}
-
-#score {
-    font-size: 36px;
-}
-
-.view {
-    display: none;
-}
-
-#startDesktop {
-    display: block;
-}
-
-#gameplayDesktop {
-    display: block;
-    position: relative;
-    width: 100%;
     height: 100%;
 }
 
-.inputSection {
-    margin-bottom: 20px;
+body {
+    margin: 0;
+    color: var(--text);
+    font-family: "Inter", system-ui, sans-serif;
+    font-size: 15px;
+    background:
+        radial-gradient(1100px 650px at 8% -12%, rgba(242, 72, 58, 0.30), transparent 60%),
+        radial-gradient(900px 650px at 100% 112%, rgba(79, 193, 196, 0.24), transparent 60%),
+        radial-gradient(700px 500px at 60% 40%, rgba(120, 80, 200, 0.10), transparent 70%),
+        var(--bg);
+    background-attachment: fixed;
 }
 
-#startButton,
-#stopButton {
-    display: inline-block;
-    width: 140px;
-    height: 48px;
-    font-size: 1.1rem;
-    padding: 0;
-    line-height: 48px;
-    text-align: center;
-    border-radius: 6px;
-    cursor: pointer;
+/* ── glass surfaces ────────────────────────────────────────────────────────── */
+.glass {
+    position: relative;
+    isolation: isolate;
+    background: rgba(255, 255, 255, 0.05);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    backdrop-filter: blur(20px) saturate(150%);
+    border: 1px solid var(--border);
+    border-top-color: var(--border-strong);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.14),
+        0 14px 34px rgba(0, 0, 0, 0.35);
 }
 
+/* ── layout: settings sidebar on the left, playfield fills the rest ───────── */
+.app {
+    display: grid;
+    grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+    height: 100vh;
+    height: 100dvh;
+}
+
+.stage {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-height: 0;
+    padding: 16px;
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 16px 0 16px 16px;
+    order: -1;
+}
+
+.label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+/* ── top bar ───────────────────────────────────────────────────────────────── */
+.topbar {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 24px;
+    padding: 12px 20px;
+}
+
+.brand {
+    font-family: "Nunito", sans-serif;
+    font-weight: 900;
+    font-size: 22px;
+    letter-spacing: -0.01em;
+    color: var(--red);
+}
+
+.now-playing {
+    min-width: 0;
+    white-space: nowrap;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+
+.song-name {
+    font-weight: 600;
+    font-size: 16px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.bpm-pill {
+    flex-shrink: 0;
+    padding: 2px 8px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.bpm-pill span {
+    color: var(--text);
+}
+
+.auto-badge {
+    flex-shrink: 0;
+    padding: 2px 8px;
+    background: var(--red);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.auto-badge[hidden] {
+    display: none;
+}
+
+.stats {
+    display: flex;
+    gap: 28px;
+}
+
+.stat {
+    text-align: right;
+}
+
+.stat-value {
+    font-family: "Nunito", sans-serif;
+    font-weight: 800;
+    font-size: 26px;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ── playfield ─────────────────────────────────────────────────────────────── */
+.playfield {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 0;
+}
 
 #gameContainer {
-    position: relative;
-    width: 99.4%;
-    height: 300px;
+    flex: 1;
+    min-height: calc(var(--lane-height) + 80px);
     overflow: hidden;
-    border: 5px solid white;
-}
-
-#keyCounters {
-    font-size: larger;
-}
-
-#scoreBoard {
-    position: relative;
-    font-size: 24px;
-    color: white;
-}
-
-
-#songInfo,
-#bpmInfo {
-    margin-top: 5px;
 }
 
 #track {
     position: absolute;
-    width: 100%;
-    height: 220px;
-    bottom: 40px;
-    background-color: darkgray;
-    z-index: 0;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: var(--lane-height);
+    transform: translateY(-50%);
+    background: rgba(6, 5, 9, 0.72);
+    border-top: 2px solid var(--border-strong);
+    border-bottom: 2px solid var(--border-strong);
 }
 
-.circle {
+#hitzone {
     position: absolute;
-    width: 200px;
-    height: 200px;
+    top: 50%;
+    left: var(--hit-x);
+    width: var(--note-size);
+    height: var(--note-size);
+    transform: translate(-50%, -50%);
     border-radius: 50%;
-    background-color: #f82f23;
-    bottom: 50px;
-    transition: background-color 0.1s ease;
-    overflow: hidden;
-    /* just in case */
+    border: 3px solid rgba(255, 255, 255, 0.35);
+    box-shadow: 0 0 0 12px rgba(255, 255, 255, 0.04);
+    pointer-events: none;
+    z-index: 1;
 }
 
-.circle::after {
-    content: "";
+/* drum halves light up on key press: D/K = rim (blue), F/J = face (red) */
+.drum-rim,
+.drum-face {
     position: absolute;
     top: 0;
-    left: 0;
-    width: 200px;
-    height: 200px;
-    /* force the overlay box size */
-    background: url("/assets/taikohitcircleoverlay.png") center/200px 200px no-repeat;
-    pointer-events: none;
+    width: 50%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.12s ease-out;
 }
 
-.circle.hit {
-    background-color: white !important;
+.drum-rim {
+    border: 8px solid var(--blue);
 }
 
-.circle,
-#hitzone {
-    bottom: 50px;
+.drum-face {
+    top: 18%;
+    height: 64%;
+    width: 32%;
+    background: var(--red);
 }
 
-#hitzone {
+.drum-rim-left,
+.drum-face-left {
+    border-radius: 999px 0 0 999px;
+    border-right: none;
+}
+
+.drum-rim-right,
+.drum-face-right {
+    border-radius: 0 999px 999px 0;
+    border-left: none;
+}
+
+.drum-rim-left { left: 0; }
+.drum-rim-right { right: 0; }
+.drum-face-left { left: 18%; }
+.drum-face-right { right: 18%; }
+
+.drum-rim.active,
+.drum-face.active {
+    opacity: 0.9;
+    transition: none;
+}
+
+#notes {
     position: absolute;
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    background-color: rgba(128, 128, 128, 0.3);
-    left: 20%;
+    inset: 0;
+    z-index: 2;
     pointer-events: none;
 }
 
-/* key overlay */
-.counter.blue {
-    color: lightblue;
+.note {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: var(--note-size);
+    height: var(--note-size);
+    margin-top: calc(var(--note-size) / -2);
+    margin-left: calc(var(--note-size) / -2);
+    border-radius: 50%;
+    will-change: transform;
 }
 
-.counter.red {
-    color: salmon;
+.note::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url("../assets/taikohitcircleoverlay.png") center / 100% 100% no-repeat;
+    pointer-events: none;
 }
 
-.counter span {
-    transition: color 0.1s ease;
+.note.red {
+    background: var(--red);
 }
 
-.counter span.flash {
+.note.blue {
+    background: var(--blue);
+}
+
+.note.hit {
+    animation: note-hit 0.16s ease-out forwards;
+}
+
+.note.missed {
+    opacity: 0.35;
+    filter: grayscale(1);
+}
+
+@keyframes note-hit {
+    to {
+        opacity: 0;
+        scale: 1.35;
+        background: white;
+    }
+}
+
+.judgement {
+    position: absolute;
+    left: var(--hit-x);
+    bottom: calc(50% + var(--lane-height) / 2 + 10px);
+    transform: translateX(-50%);
+    font-family: "Nunito", sans-serif;
+    font-weight: 900;
+    font-size: 26px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    pointer-events: none;
+    opacity: 0;
+    z-index: 3;
+}
+
+.judgement.show {
+    animation: judgement-pop 0.45s ease-out forwards;
+}
+
+.judgement.great { color: var(--great); }
+.judgement.good { color: var(--good); }
+.judgement.miss { color: var(--miss); }
+
+@keyframes judgement-pop {
+    0% { opacity: 1; transform: translate(-50%, 6px); }
+    60% { opacity: 1; transform: translate(-50%, 0); }
+    100% { opacity: 0; transform: translate(-50%, -4px); }
+}
+
+.combo-display {
+    position: absolute;
+    left: 20px;
+    bottom: 12px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    pointer-events: none;
+    z-index: 3;
+}
+
+.combo-value {
+    font-family: "Nunito", sans-serif;
+    font-weight: 900;
+    font-size: clamp(28px, 6vh, 56px);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+
+.combo-value.zero {
+    color: var(--miss);
+}
+
+.combo-value.bump {
+    animation: combo-bump 0.12s ease-out;
+}
+
+@keyframes combo-bump {
+    from { scale: 1.12; }
+}
+
+.results {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    background: rgba(10, 9, 14, 0.7);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    z-index: 5;
+}
+
+.results[hidden] {
+    display: none;
+}
+
+.results h2 {
+    margin: 0;
+    font-family: "Nunito", sans-serif;
+    font-weight: 900;
+    font-size: 28px;
+}
+
+.results dl {
+    display: grid;
+    grid-template-columns: repeat(6, auto);
+    gap: 32px;
+    margin: 0;
+}
+
+.results dt {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.results dd {
+    margin: 2px 0 0;
+    font-family: "Nunito", sans-serif;
+    font-weight: 800;
+    font-size: 26px;
+    font-variant-numeric: tabular-nums;
+}
+
+.results .great dd { color: var(--great); }
+.results .miss dd { color: var(--miss); }
+
+.progress {
+    height: 4px;
+    background: var(--surface-2);
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0;
+    background: var(--red);
+}
+
+/* key counters */
+.keys {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.key {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted);
+    transition: background-color 0.12s ease-out, border-color 0.12s ease-out;
+}
+
+.key kbd {
+    display: inline-grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    font-family: "Nunito", sans-serif;
+    font-weight: 800;
     color: white;
-    /* or whatever “flash” color you like */
 }
 
-/* remove the blue focus ring and sticky highlight */
-input[type="checkbox"] {
+.key.red kbd { background: var(--red-dark); }
+.key.blue kbd { background: var(--blue-dark); }
+
+.key.flash {
+    transition: none;
+    color: var(--text);
+}
+
+.key.red.flash { border-color: var(--red); background-color: rgba(242, 72, 58, 0.18); }
+.key.blue.flash { border-color: var(--blue); background-color: rgba(79, 193, 196, 0.18); }
+
+/* ── settings panels ───────────────────────────────────────────────────────── */
+.panel {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 18px;
+}
+
+/* keep an open dropdown above the panels below it */
+.panel:has(.menu:not([hidden])) {
+    z-index: 10;
+}
+
+.panel h3 {
+    margin: 0;
+    font-family: "Nunito", sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.field > label {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 500;
+}
+
+.field output {
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.hint {
+    color: var(--muted);
+    font-weight: 400;
+    font-size: 13px;
+}
+
+.help {
+    margin: 0;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.help code {
+    padding: 0 4px;
+    background: var(--surface-2);
+}
+
+.error {
+    margin: 0;
+    font-size: 13px;
+    color: var(--red);
+}
+
+input[type="number"],
+textarea {
+    width: 100%;
+    padding: 9px 11px;
+    border: 1px solid var(--border);
+    border-radius: 0;
+    background: var(--field-bg);
+    color: var(--text);
+    font: inherit;
+    resize: vertical;
+}
+
+input[type="number"]:focus,
+textarea:focus {
     outline: none;
-    box-shadow: none;
-    -webkit-appearance: none;
-    appearance: none;
-    width: 16px;
-    height: 16px;
-    border: 2px solid #fff;
-    background-color: transparent;
+    border-color: var(--red);
+}
+
+input[type="range"] {
+    width: 100%;
+    accent-color: var(--red);
+}
+
+/* sample song dropdown */
+.song-picker {
+    position: relative;
+}
+
+.picker {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    padding: 0 14px;
+    text-align: left;
+}
+
+.picker span {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.chevron {
+    flex-shrink: 0;
+    width: 12px;
+    height: 12px;
+    transition: transform 0.15s;
+}
+
+.picker[aria-expanded="true"] .chevron {
+    transform: rotate(180deg);
+}
+
+.menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    z-index: 20;
+    max-height: min(380px, 60vh);
+    margin: 0;
+    padding: 4px 0;
+    overflow-y: auto;
+    list-style: none;
+    background: rgba(32, 29, 40, 0.98);
+}
+
+.menu[hidden] {
+    display: none;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 14px;
+    border: none;
+    border-left: 3px solid transparent;
+    background: none;
+    color: var(--text);
+    font: inherit;
+    text-align: left;
     cursor: pointer;
 }
 
-input[type="checkbox"]:checked {
-    background-color: white;
+.menu-item:hover,
+.menu-item:focus-visible {
+    outline: none;
+    background: rgba(255, 255, 255, 0.08);
 }
 
-/* make sure no outline shows on focus or active */
-input[type="checkbox"]:focus,
-input[type="checkbox"]:active {
-    outline: none;
-    box-shadow: none;
+.menu-item[aria-current="true"] {
+    border-left-color: var(--red);
+    background: rgba(242, 72, 58, 0.12);
+}
+
+.menu-item .title {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.menu-item .bpm {
+    flex-shrink: 0;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--muted);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+
+.file-drop {
+    display: block;
+    padding: 12px;
+    border: 1px dashed var(--border-strong);
+    color: var(--muted);
+    text-align: center;
+    cursor: pointer;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    transition: border-color 0.15s, color 0.15s;
+}
+
+.file-drop:hover,
+.file-drop:focus-within {
+    border-color: var(--red);
+    color: var(--text);
+}
+
+.file-drop input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.file-drop.loaded {
+    border-style: solid;
+    color: var(--text);
+}
+
+.toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.toggle input {
+    appearance: none;
+    position: relative;
+    flex-shrink: 0;
+    width: 36px;
+    height: 20px;
+    margin: 0;
+    border-radius: 999px;
+    background: var(--field-bg);
+    border: 1px solid var(--border-strong);
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.toggle input::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--muted);
+    transition: transform 0.15s, background-color 0.15s;
+}
+
+.toggle input:checked {
+    background: var(--red);
+    border-color: var(--red);
+}
+
+.toggle input:checked::after {
+    transform: translateX(16px);
+    background: white;
+}
+
+.toggle input:focus-visible {
+    outline: 2px solid var(--text);
+    outline-offset: 2px;
+}
+
+.buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.btn {
+    flex: 1;
+    height: 42px;
+    border: 1px solid var(--border-strong);
+    border-radius: 0;
+    background: var(--surface-2);
+    color: var(--text);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s, opacity 0.15s;
+}
+
+.btn:hover {
+    background: rgba(255, 255, 255, 0.13);
+}
+
+.btn.primary {
+    background: linear-gradient(180deg, #f6655a 0%, var(--red) 50%, #df3b2e 51%, var(--red-dark) 100%);
+    border-color: var(--red);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.btn.primary:hover {
+    filter: brightness(1.08);
+}
+
+.btn:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+audio {
+    width: 100%;
+    height: 36px;
+}
+
+audio::-webkit-media-controls-enclosure {
+    border-radius: 0;
+}
+
+/* ── small screens: stack everything and let the page scroll ───────────────── */
+@media (max-width: 900px) {
+    :root {
+        --lane-height: 130px;
+        --hit-x: 80px;
+    }
+
+    .app {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+
+    .stage {
+        padding: 16px 16px 0;
+    }
+
+    .sidebar {
+        order: 0;
+        overflow: visible;
+        padding: 14px 16px 16px;
+    }
+
+    .topbar {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .stats {
+        justify-content: space-between;
+    }
+
+    .stat {
+        text-align: left;
+    }
+
+    #gameContainer {
+        flex: none;
+        height: calc(var(--lane-height) + 110px);
+    }
+
+    .combo-display {
+        left: 14px;
+        bottom: 8px;
+    }
+
+    .combo-value {
+        font-size: 28px;
+    }
+
+    .results dl {
+        grid-template-columns: repeat(3, auto);
+        gap: 16px 28px;
+    }
+
+    .key {
+        padding: 8px 10px;
+    }
 }

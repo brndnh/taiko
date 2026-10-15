@@ -5,88 +5,173 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>rhythm sense practice!</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
-    <link href="/assets/whiteflower.ico" rel="icon">
+    <link href="assets/whiteflower.ico" rel="icon">
 </head>
 
 <body>
-    <div id="score">Score: 0</div>
-    <!-- <div id="hitScores" >
-        Perfect: <span id="perfectCount">0</span> |
-        Good:    <span id="goodCount">0</span> |
-        Misses:  <span id="missCount">0</span>
-    </div> -->
-    </div>
+    <div class="app">
+        <main class="stage">
+            <!-- top bar: song info + live stats -->
+            <header class="topbar glass">
+                <div class="brand">rhythm sense</div>
 
-    <!-- gameplay screen -->
-    <div id="gameplayDesktop" class="view">
-        <div id="gameContainer">
-            <div id="track"></div>
-            <div id="hitzone"></div>
-        </div>
+                <div class="now-playing">
+                    <span class="label">Now playing</span>
+                    <span id="songName" class="song-name">No song loaded</span>
+                    <span class="bpm-pill"><span id="bpmDisplay">120</span> BPM</span>
+                    <span id="autoBadge" class="auto-badge" hidden>Auto</span>
+                </div>
 
-        <!-- key counter -->
-        <div id="keyCounters" style="display:flex; gap:1em; margin:1em 0;">
-            <div class="counter blue">D: <span id="countD">0</span></div>
-            <div class="counter red">F: <span id="countF">0</span></div>
-            <div class="counter red">J: <span id="countJ">0</span></div>
-            <div class="counter blue">K: <span id="countK">0</span></div>
-        </div>
+                <div class="stats">
+                    <div class="stat">
+                        <span class="label">Score</span>
+                        <span id="score" class="stat-value">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="label">Accuracy</span>
+                        <span id="accuracy" class="stat-value">100%</span>
+                    </div>
+                </div>
+            </header>
 
+            <!-- playfield -->
+            <section class="playfield">
+                <div id="gameContainer" class="glass">
+                    <div id="track"></div>
+                    <div id="hitzone">
+                        <div class="drum-rim drum-rim-left"></div>
+                        <div class="drum-rim drum-rim-right"></div>
+                        <div class="drum-face drum-face-left"></div>
+                        <div class="drum-face drum-face-right"></div>
+                    </div>
+                    <div id="notes"></div>
+                    <div id="judgement" class="judgement"></div>
+                    <div class="combo-display">
+                        <span id="combo" class="combo-value zero">0</span>
+                        <span class="label">Combo</span>
+                    </div>
+                    <div id="results" class="results" hidden>
+                        <h2 id="resTitle">Results</h2>
+                        <dl>
+                            <div><dt>Score</dt><dd id="resScore">0</dd></div>
+                            <div><dt>Accuracy</dt><dd id="resAccuracy">0%</dd></div>
+                            <div><dt>Max combo</dt><dd id="resCombo">0</dd></div>
+                            <div class="great"><dt>Great</dt><dd id="resGreat">0</dd></div>
+                            <div class="good"><dt>Good</dt><dd id="resGood">0</dd></div>
+                            <div class="miss"><dt>Miss</dt><dd id="resMiss">0</dd></div>
+                        </dl>
+                    </div>
+                </div>
+                <div class="progress"><div id="progressBar" class="progress-bar"></div></div>
 
-        <!-- game options below the game container -->
-        <div id="scoreBoard"> <audio id="audioPlayer" controls></audio>
-            <label>
-                Circle Offset:
-                <input type="range" id="offsetSlider" min="-100" max="100" step="1" value="0">
-                <span id="offsetDisplay">0</span>px
-            </label>
+                <!-- key counters -->
+                <div id="keyCounters" class="keys">
+                    <div class="key blue glass" data-code="KeyD"><kbd>D</kbd><span id="countD">0</span></div>
+                    <div class="key red glass" data-code="KeyF"><kbd>F</kbd><span id="countF">0</span></div>
+                    <div class="key red glass" data-code="KeyJ"><kbd>J</kbd><span id="countJ">0</span></div>
+                    <div class="key blue glass" data-code="KeyK"><kbd>K</kbd><span id="countK">0</span></div>
+                </div>
+            </section>
+        </main>
 
-            <div id="songInfo">Now Playing: <span id="songName">No Song</span></div>
-            <input type="file" id="audioUpload" accept="audio/mp3">
-            <label>
-                Music:
-                <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.5">
-                <span id="volumeDisplay">50%</span>
-            </label>
+        <!-- settings -->
+        <aside class="sidebar">
+            <div class="panel glass">
+                <h3>Song</h3>
 
-            <label>
-                Hitsounds:
-                <input type="range" id="sfxSlider" min="0" max="1" step="0.01" value="0.7">
-                <span id="sfxDisplay">70%</span>
-            </label>
+                <div class="song-picker">
+                    <button type="button" id="songPickerButton" class="btn picker" aria-haspopup="true" aria-expanded="false" aria-controls="songMenu">
+                        <span id="songPickerLabel">Choose a sample song</span>
+                        <svg class="chevron" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+                    </button>
+                    <ul id="songMenu" class="menu glass" hidden></ul>
+                </div>
 
+                <div class="divider"><span>or</span></div>
 
-            <div id="bpmInfo">BPM: <span id="bpmDisplay">120</span></div>
-        </div>
+                <label class="file-drop">
+                    <input type="file" id="audioUpload" accept="audio/*">
+                    <span id="fileLabel">Upload your own audio file…</span>
+                </label>
 
-        <!-- game controls on the left side -->
-        <div id="controlsContainer">
-            <input type="number" id="bpmInput" placeholder="120">
+                <div class="field">
+                    <label for="bpmInput">BPM</label>
+                    <input type="number" id="bpmInput" placeholder="120" min="30" max="400" step="any">
+                </div>
 
-            <label>
-                <input type="checkbox" id="colorToggle" checked>
-                Alternate red/blue circles
-                <input type="checkbox" id="tripletToggle">
-                Enable more patterns
-            </label>
+                <div class="field">
+                    <label for="tempoChanges">Tempo changes <span class="hint">optional</span></label>
+                    <textarea id="tempoChanges" rows="2" placeholder="1:32 180, 2:10.5 150"></textarea>
+                    <p class="help">One <code>time bpm</code> pair per change. Time is <code>m:ss</code> or seconds.</p>
+                    <p id="tempoError" class="error" hidden></p>
+                </div>
 
+                <div class="buttons">
+                    <button id="startButton" class="btn primary">Start</button>
+                    <button id="stopButton" class="btn">Stop</button>
+                </div>
 
-            <label>
-                Circle Speed:
-                <input type="range" id="speedInput" min="5" max="35" value="20">
-                <span id="speedDisplay">20</span>
-                px/s
-            </label>
+                <audio id="audioPlayer" controls></audio>
+            </div>
 
-            <label>
-                <input type="checkbox" id="soundToggle" checked>
-                Hit Sounds
-            </label>
+            <div class="panel glass">
+                <h3>Gameplay</h3>
 
-            <button id="startButton">Start</button>
-            <button id="stopButton">Stop</button>
-        </div>
+                <label class="toggle">
+                    <input type="checkbox" id="autoplayToggle">
+                    <span>Auto play</span>
+                </label>
+                <label class="toggle">
+                    <input type="checkbox" id="colorToggle" checked>
+                    <span>Mix red and blue notes</span>
+                </label>
+                <label class="toggle">
+                    <input type="checkbox" id="tripletToggle">
+                    <span>More patterns (doubles)</span>
+                </label>
+                <label class="toggle">
+                    <input type="checkbox" id="soundToggle" checked>
+                    <span>Hit sounds</span>
+                </label>
+
+                <div class="field">
+                    <label for="speedInput">Scroll speed <output id="speedDisplay">1.0x</output></label>
+                    <input type="range" id="speedInput" min="0.5" max="2.5" step="0.1" value="1">
+                </div>
+            </div>
+
+            <div class="panel glass">
+                <h3>Audio</h3>
+
+                <div class="field">
+                    <label for="volumeSlider">Music <output id="volumeDisplay">50%</output></label>
+                    <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.5">
+                </div>
+
+                <div class="field">
+                    <label for="sfxSlider">Hit sounds <output id="sfxDisplay">70%</output></label>
+                    <input type="range" id="sfxSlider" min="0" max="1" step="0.01" value="0.7">
+                </div>
+
+                <div class="field">
+                    <label class="toggle">
+                        <input type="checkbox" id="headphoneToggle">
+                        <span>Wireless headphones (AirPods)</span>
+                    </label>
+                    <p id="headphoneHelp" class="help">Delays notes to match Bluetooth audio lag.</p>
+                </div>
+
+                <div class="field">
+                    <label for="offsetSlider">Audio offset <output id="offsetDisplay">0 ms</output></label>
+                    <input type="range" id="offsetSlider" min="-200" max="200" step="1" value="0">
+                    <p class="help">Positive if notes arrive before the beat; negative if they arrive after.</p>
+                </div>
+            </div>
+        </aside>
     </div>
 
     <!-- hit sounds -->
